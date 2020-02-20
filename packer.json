@@ -1,0 +1,31 @@
+{
+    "variables": {
+      "project_id": ""
+    },
+    "builders": [
+      {
+        "type": "googlecompute",
+        "project_id": "{{ user `project_id` }}",
+        "source_image": "shipyard-1582105431",
+        "zone": "europe-west1-b",
+        "ssh_username" : "root",
+        "image_name": "qcon-workshop",
+        "image_labels": {
+          "created": "{{ timestamp }}"
+        }
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "file",
+        "source": "stack",
+        "destination": "/tmp/stack"
+      },
+      {
+        "type": "shell",
+        "script": "bootstrap.sh",
+        "environment_vars": [
+        ]
+      }
+    ]
+  }
