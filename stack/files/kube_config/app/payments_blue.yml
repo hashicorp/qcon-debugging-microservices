@@ -27,7 +27,7 @@ spec:
         image: nicholasjackson/broken-service:v1.0.0
         imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8080
+        - containerPort: 9090
         env:
         - name: "TRACING_ZIPKIN"
           value: "http://jaeger:9411"
