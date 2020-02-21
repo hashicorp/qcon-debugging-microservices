@@ -1,5 +1,5 @@
 module.exports = {
     docs: {
-      Vault: ['index'],
+      "Debugging Microservices": ['index','canary'],
     },
   };

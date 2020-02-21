@@ -1,10 +1,8 @@
 ---
-id: index
+id: canary
 title: Debugging Microservices
-sidebar_label: Getting Started
+sidebar_label: Canary Deployments
 ---
-
-## Getting Started
 
 # Canary Deployments
 
