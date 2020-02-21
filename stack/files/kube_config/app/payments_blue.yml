@@ -18,13 +18,13 @@ spec:
         app: payment-blue
       annotations:
         "consul.hashicorp.com/connect-inject": "true"
-        "consul.hashicorp.com/service-meta-version": "2"
-        "consul.hashicorp.com/service-tags": "v2"
+        "consul.hashicorp.com/service-meta-version": "1"
+        "consul.hashicorp.com/service-tags": "v1"
         "consul.hashicorp.com/connect-service-upstreams": "currency:9091"
     spec:
       containers:
       - name: payment
-        image: nicholasjackson/broken-service:v2.0.0
+        image: nicholasjackson/broken-service:v1.0.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080

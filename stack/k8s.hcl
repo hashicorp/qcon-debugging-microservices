@@ -8,3 +8,12 @@ k8s_cluster "k3s" {
     name = "network.cloud"
   }
 }
+
+k8s_config "app" {
+  depends_on = ["helm.consul"]
+  cluster = "k8s_cluster.k3s"
+
+  paths = ["./files/kube_config/app"]
+  
+  wait_until_ready = true
+}

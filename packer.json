@@ -1,6 +1,6 @@
 {
     "variables": {
-      "project_id": ""
+      "project_id": "instruqt-hashicorp"
     },
     "builders": [
       {
