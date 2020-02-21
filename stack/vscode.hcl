@@ -1,6 +1,6 @@
 container "vscode" {
   image   {
-    name = "shipyardrun/code:latest"
+    name = "shipyardrun/code:solo"
   }
 
   # Add the working files

@@ -13,7 +13,7 @@ EOF
 
 // After apply runs the following browser windows are opened (does not open them if run with --headless)
 browser_windows = [
-  "http://localhost:8080/?folder=vscode-remote%3A%2F%2Flocalhost%3A8080%2Fwork",
+  "http://localhost:8080?folder=/work",
   "http://localhost:8081",
   "http://localhost:18500",
   "http://localhost:19090",
