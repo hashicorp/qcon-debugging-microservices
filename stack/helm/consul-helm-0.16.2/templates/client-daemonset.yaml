@@ -140,6 +140,7 @@ spec:
                 -advertise="${ADVERTISE_IP}" \
                 -bind=0.0.0.0 \
                 -client=0.0.0.0 \
+                -retry-interval=2s \
                 -node-meta=pod-name:${HOSTNAME} \
                 -hcl='leave_on_terminate = true' \
                 {{- if .Values.global.tls.enabled }}
@@ -259,6 +260,11 @@ spec:
                   curl http://127.0.0.1:8500/v1/status/leader \
                   {{- end }}
                   2>/dev/null | grep -E '".+"'
+            failureThreshold: 2
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            successThreshold: 1
+            timeoutSeconds: 5
           {{- if .Values.client.resources }}
           resources:
             {{ tpl .Values.client.resources . | nindent 12 | trim }}
