@@ -1,0 +1,19 @@
+title = "Debugging Microservices"
+author = "Erik Veld, Christian Posta, Nicholas Jackson"
+slug = "debugging-microservices"
+
+// Shown in the command output when yard apply is run
+intro = <<EOF
+  export KUBECONFIG="$HOME/.shipyard/config/k3s/kubeconfig.yml"
+
+  Open your browser at `http://localhost:18500` to access the Consul UI
+  Open your browser at `http://localhost:8080` to run VSCode in your browser
+  Open your browser at `http://localhost:8081` to see the documentation
+EOF
+
+// After apply runs the following browser windows are opened (does not open them if run with --headless)
+browser_windows = [
+  "http://localhost:8080/?folder=vscode-remote%3A%2F%2Flocalhost%3A8080%2Fwork",
+  "http://localhost:8081",
+  "http://localhost:18500",
+]
