@@ -1,4 +1,4 @@
-module github.com/hashicorp/debugging_microservices
+module github.com/hashicorp/debugging-microservices/payment-service
 
 go 1.13
 

@@ -1,0 +1,35 @@
+---
+# API service version 3
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-deployment-green
+  labels:
+    app: payment-green
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-green
+  template:
+    metadata:
+      labels:
+        app: payment-green
+      annotations:
+        "consul.hashicorp.com/connect-inject": "true"
+        "consul.hashicorp.com/service-meta-version": "5"
+        "consul.hashicorp.com/service-tags": "v5"
+        "consul.hashicorp.com/connect-service-upstreams": "currency:9091"
+    spec:
+      containers:
+      - name: payment
+        image: nicholasjackson/broken-service:v5.0.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: "TRACING_ZIPKIN"
+          value: "http://jaeger:9411"
+        - name: "CURRENCY_ADDR"
+          value: "http://localhost:9091"

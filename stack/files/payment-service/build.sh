@@ -1,5 +1,5 @@
 #! /bin/bash
-VERSION=v3.0.0
+VERSION=v5.0.0
 
 case "$1" in
 "go")
