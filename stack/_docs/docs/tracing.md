@@ -8,20 +8,15 @@ sidebar_label: Tracing
 
 The application you deployed in the previous step has been configured to use the [Zipkin](https://zipkin.io/) tracing protocol. Let's curl the Web endpoint to generate some traces.
 
-> Remember; if you are using the Shipyard Visual studio code environment or Instruqt use `dockerhost` instead of `localhost`! 
-> On Instruqt, the UIs referenced in this section are also conveniently open for you in the Instruqt UI
-
 ```shell
 curl web.ingress.shipyard:9090
 ```
 
-<Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
 
-
-Jaeger has been configured to collect and visualize the traces, all spans are sent are transmitted from the applications and Envoy proxies and are collected in Jaeger. 
-If you look at the Jaeger UI, and view a trace from the `web` service you will see the individual spans which make up a trace.
-
-[localhost:16686/search?service=web](localhost:16686/search?service=web)
+Jaeger has been configured to collect and visualize the traces, all spans are sent are transmitted from the applications and Envoy proxies and are collected in Jaeger. If you look at the Jaeger UI, and view a trace from the `web` service you will see the individual spans which make up a trace.
 
 ![](images/tracing/web_1.png)
 
@@ -38,6 +33,7 @@ If you look at the trace, the last span in the chain is the `payments` span whic
 The reason behind this is that the Payment service is not aware of any parent span id from the API service.
 
 To rectify this situation we need to do two things: 
+
 1. When making a call to an upstream service we pass the span id, trace id, and parent span id as HTTP headers. [https://github.com/openzipkin/b3-propagation](https://github.com/openzipkin/b3-propagation).
 2. When handling requests we need to look for the presence of the zipkin headers, and use this information when creating a new span.
  
@@ -50,7 +46,7 @@ X-B3-Sampled: 1
 
 Thankfully the OpenTracing SDK makes this process nice and simple.
 
-Open the `handler.go` file in the `payments-service` folder and add the following code to `line 14`. This code automatically extracts the headers from the request and creates a `SpanContext`. You can then use this when creating the span.
+In the VS Code tab, open the `handler.go` file in the `payments-service` folder and add the following code to `line 14`. This code automatically extracts the headers from the request and creates a `SpanContext`. You can then use this when creating the span.
 
 ```go
 // attempt to create a span using a parent span defined in http headers
@@ -115,42 +111,32 @@ You will also need to add the following import to the imports declaration at the
 "github.com/opentracing/opentracing-go/ext"
 ```
 
-You can now re-build the application, the build will complete 100% in Docker using a multistage build, if you go to your terminal in the `payments-service` folder and execute the following command to build a new version and tag it as `v2.0.0`.
+You can now re-build the application, the build will complete 100% in Docker using a multistage build, if you go to your terminal in the `payments-service` folder and execute the following command to build a new version and tag it as `v5.0.0`.
 
 ```shell
-docker build -t nicholasjackson/broken-service:v2.0.0 .
+docker build -t nicholasjackson/broken-service:v5.0.0 .
 ```
 
-```shell
-Sending build context to Docker daemon  8.032MB
-Step 1/10 : FROM golang:alpine
- ---> 3024b4e742b0
-Step 2/10 : COPY . /go/src/github.com/hashicorp/consul-service-mesh-for-developer/payment-service
- ---> 3ecd14dc6eef
-Step 3/10 : WORKDIR /go/src/github.com/hashicorp/consul-service-mesh-for-developer/payment-service
- ---> Running in 10649f33c839
-
-#...
-
-Removing intermediate container 524e1417ed99
- ---> 1e5194aff731
-Successfully built 1e5194aff731
-Successfully tagged nicholasjackson/broken-service:v2.0.0
-```
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root"/>
+</p>
 
 You can now deploy the new version of the service. To avoid having to push the Docker image to a remote repository we can use the `shipyard push` command to push the image to Kubernetes image cache. Run the following command in your terminal.
 
 ```shell
-➜ yard push --image nicholasjackson/broken-service:v2.0.0
-## Pushing image nicholasjackson/broken-service:v2.0.0 to cluster shipyard
+shipyard push nicholasjackson/broken-service:v5.0.0 k8s_cluster.k3s
 ```
 
-Now let's deploy the new version to our Kubernetes cluster, the file `payments_blue.yml` in the `2_tracing` folder already has been updated with the reference to the new image which you have just built.
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root"/>
+</p>
+
+Now let's deploy the new version to our Kubernetes cluster, the file `payments_blue.yml` in the `exercises/tracing` folder already has been updated with the reference to the new image which you have just built.
 
 ```yaml
 containers:
 - name: payment
-  image: nicholasjackson/broken-service:v2.0.0
+  image: nicholasjackson/broken-service:v5.0.0
   imagePullPolicy: IfNotPresent
   ports:
   - containerPort: 8080
@@ -164,45 +150,24 @@ containers:
 Deploy the updated application using `kubectl`:
 
 ```shell
-➜ kubectl apply -f ./2_tracing/payments_blue.yml
-deployment.apps/payment-deployment-blue configured
+kubectl apply -f ./exercises/tracing/payments_blue.yml
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root"/>
+</p>
 
 Again let's curl the service to capture some traces.
 
 ```shell
-➜ curl localhost:9090                                   
-{
-  "name": "web",
-  "uri": "/",
-  "type": "HTTP",
-  "start_time": "2019-11-19T09:02:51.138696",
-  "end_time": "2019-11-19T09:02:51.194127",
-  "duration": "55.4355ms",
-  "body": "Hello World",
-  "upstream_calls": [
-    {
-      "name": "api-v1",
-      "uri": "http://localhost:9091",
-      "type": "HTTP",
-      "start_time": "2019-11-19T09:02:51.146530",
-      "end_time": "2019-11-19T09:02:51.191146",
-      "duration": "44.6169ms",
-      "body": "Response from API v1",
-      "upstream_calls": [
-        {
-          "uri": "http://localhost:9091",
-          "code": 200
-        }
-      ],
-      "code": 200
-    }
-  ],
-  "code": 200
-}
+curl web.ingress.shipyard:9090 
 ```
 
-When you again look at the traces [http://localhost:16686/search?service=web](http://localhost:16686/search?service=web) you should now see the `Payment`, and `Currency` services correctly showing as part of the trace.
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root"/>
+</p>
+
+When you again look at the traces in Jaeger you should now see the `Payment`, and `Currency` services correctly showing as part of the trace.
 
 ![](images/tracing/web_3.png)
 
