@@ -7,6 +7,11 @@ k8s_cluster "k3s" {
   network {
     name = "network.cloud"
   }
+
+  # Push squash debugger so start is quicker
+  image {
+    name = "quay.io/solo-io/plank-dlv:0.5.18"
+  }
 }
 
 k8s_config "app" {
