@@ -1,5 +1,5 @@
 module.exports = {
     docs: {
-      "Debugging Microservices": ['index','canary'],
+      "Debugging Microservices": ['index','canary', 'debugging'],
     },
   };
