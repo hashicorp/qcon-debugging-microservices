@@ -1,5 +1,5 @@
 #! /bin/bash
-VERSION=v5.0.0
+VERSION=v4.0.0
 
 case "$1" in
 "go")
@@ -8,7 +8,7 @@ case "$1" in
 	;;
 "docker")
 	echo "Creating Docker image"
-	docker build -t nicholasjackson/broken-service:${VERSION} .
+	docker build -t nicholasjackson/broken-service:${VERSION} --no-cache .
 	;;
 *)
 	echo "Options:"
