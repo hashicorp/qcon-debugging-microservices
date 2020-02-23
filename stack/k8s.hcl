@@ -22,8 +22,9 @@ k8s_config "gloo" {
   cluster = "k8s_cluster.k3s"
 
   paths = [
-    "./files/kube_config/gloo-loop/gloo-crds.yaml",
-    "./files/kube_config/gloo-loop/gloo.yaml"
+    "./files/kube_config/gloo-loop/00-crds.yaml",
+    "./files/kube_config/gloo-loop/10-gloo.yaml",
+    "./files/kube_config/gloo-loop/20-gloo-crs.yaml",
   ]
   
   wait_until_ready = true

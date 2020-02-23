@@ -1,0 +1,132 @@
+
+apiVersion: gateway.solo.io.v2/v2
+kind: Gateway
+metadata:
+  name: gateway-proxy-v2
+  namespace: gloo-system
+  labels:
+    app: gloo
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "5"
+spec:
+  bindAddress: "::"
+  bindPort: 8080
+  httpGateway: {}
+  useProxyProto: false
+  ssl: false
+  proxyNames:
+  - gateway-proxy-v2
+
+---
+
+apiVersion: gateway.solo.io.v2/v2
+kind: Gateway
+metadata:
+  name: gateway-proxy-v2-ssl
+  namespace: gloo-system
+  labels:
+    app: gloo
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-weight": "5"
+spec:
+  bindAddress: "::"
+  bindPort: 8443
+  httpGateway: {}
+  useProxyProto: false
+  ssl: true
+  proxyNames:
+  - gateway-proxy-v2
+---
+# Source: gloo-ee/templates/40-settings.yaml
+
+
+apiVersion: gloo.solo.io/v1
+kind: Settings
+metadata:
+  labels:
+    app: gloo
+    gloo: settings
+  name: default
+  namespace: gloo-system
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "5"
+spec:
+  gloo:
+    xdsBindAddr: "0.0.0.0:9977"
+  discoveryNamespace: gloo-system
+  kubernetesArtifactSource: {}
+  kubernetesConfigSource: {}
+  kubernetesSecretSource: {}
+  refreshRate: 60s
+  gateway:
+    validation:
+      proxyValidationServerAddr: "gloo:9988"
+      alwaysAccept: true
+
+  extensions:
+    configs:
+      extauth:
+        extauthzServerRef:
+          # arbitrarily default to the standalone deployment name even if we're using both
+          name: extauth
+          namespace: gloo-system
+      rate-limit:
+        ratelimit_server_ref:
+          name: rate-limit
+          namespace: gloo-system
+
+---
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  labels:
+    app: gloo
+    gloo: extauth
+  name: extauth
+  namespace: gloo-system
+spec:
+  upstreamSpec:
+    use_http2: true
+    healthChecks:
+    - timeout: 5s
+      interval: 1m
+      unhealthyThreshold: 5
+      healthyThreshold: 5
+      grpcHealthCheck:
+        serviceName: ext-auth
+    kube:
+      serviceName: extauth
+      serviceNamespace: gloo-system
+      servicePort:  8083
+      serviceSpec:
+        grpc: {}
+
+---
+# Source: gloo-ee/templates/4-ratelimit-upstream.yaml
+
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata:
+  labels:
+    app: gloo
+    gloo: rate-limit
+  name: rate-limit
+  namespace: gloo-system
+spec:
+  upstreamSpec:
+    healthChecks:
+    - timeout: 5s
+      interval: 1m
+      unhealthyThreshold: 5
+      healthyThreshold: 5
+      grpcHealthCheck:
+        serviceName: ratelimit
+    kube:
+      serviceName: rate-limit
+      serviceNamespace: gloo-system
+      servicePort:  18081
+      serviceSpec:
+        grpc: {}
