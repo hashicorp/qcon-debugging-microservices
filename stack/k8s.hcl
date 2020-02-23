@@ -27,5 +27,5 @@ k8s_config "gloo" {
     "./files/kube_config/gloo-loop/20-gloo-crs.yaml",
   ]
   
-  wait_until_ready = true
+  wait_until_ready = false
 }
