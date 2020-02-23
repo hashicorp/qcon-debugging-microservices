@@ -18,38 +18,31 @@ To get started using loop, let's install the loop server:
 
 ```shell
 kubectl apply -f gloo-loop/loop.yaml
-
-namespace/loop-system created
-configmap/loop-config created
-serviceaccount/loop created
-customresourcedefinition.apiextensions.k8s.io/tapconfigs.loop.solo.io created
-clusterrole.rbac.authorization.k8s.io/loop-tap-manager-role created
-clusterrolebinding.rbac.authorization.k8s.io/loop-role-binding created
-service/loop created
-deployment.apps/loop created
-upstream.gloo.solo.io/loop created
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
 
 Checking the loop server came up correctly:
 
 ```shell
 kubectl get pod -n loop-system
-
-NAME                    READY   STATUS    RESTARTS   AGE
-loop-7485bd975b-fj4kz   1/1     Running   0          59s
 ```
 
-Lastly, we need to expose the loop server locally for our CLI to connect. We can do that with the following `yard` command:
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
+
+Lastly, we need to expose the loop server locally for our CLI to connect. We can do that with the following `kubectl` command:
 
 ```shell
-yard expose --service-name deploy/loop --namespace loop-system --port 5678:5678
+kubectl port-forward -n loop-system deploy/loop 5678 &
 ```
 
-If you want to expose using the regular Kubernetes client, you can do the following:
-
-```shell
-kubectl port-forward -n loop-system deploy/loop 5678 
-```
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
 
 ### Listing existing loop captures
 
@@ -63,6 +56,10 @@ loopctl list
 +----+------+------+--------+-------------+
 +----+------+------+--------+-------------+
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
 
 We see that we don't have any requests captured. Let's explore how loop works and how we can configure it to capture failed requests so we can replay them and debug. 
 
@@ -94,25 +91,17 @@ Let's apply this configuration to loop:
 
 ```shell
 kubectl apply -f gloo-loop/tap.yaml
-
-tapconfig.loop.solo.io/gloo created
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
 
 Now we should have our Loop system configured for capture. Next we need to send some requests into the system that fail and observe that loop captures the requests.
 
 ### Capturing requests
 
 To exercise this behavior, make sure one of the failing services from the previous section is enabled. When we introduced `payments` service (as a `green` deployment in a `blue-green` scenario), we saw that requests would timeout and an `HTTP 500` status was returned. Let's exercise this request, but the important part is to call this through the API Gateway which has Loop enabled. To do this, we need to expose the API Gateway like we did in the getting-started section:
-
-```shell
-yard expose --service-name svc/gateway-proxy-v2 --namespace gloo-system  --port 8081:80
-```
-
-You could expose directly in Kubernetes with:
-
-```shell
-kubectl port-forward svc/gateway-proxy-v2 -n gloo-system  8081:80
-```
 
 Also make sure the route was created to the `web` service. If it's not, here's a quick convenience command to do so:
 
@@ -131,8 +120,12 @@ $  glooctl add route --path-prefix / --dest-name default-web-9090
 Now make a request:
 
 ```shell
-curl -v localhost:8081
+curl $(glooctl proxy url)
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
 
 When you hit a failed request (HTTP 500), the Loop system should had recorded that. Note, any successful requests (HTTP 200) are NOT captured. To verify we captured a request, let's use loop:
 
@@ -146,6 +139,10 @@ loopctl list
 +----+------+------+--------+-------------+
 ```
 
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
+
 Yay! We've sorted through the requests and captured only the failing ones. Now let's see how we can replay this in a way that allows us to debug the system. 
 
 ### Replaying and debugging captured requests
@@ -155,6 +152,10 @@ Now that we've captured our failing requests, we can replay them. In this simpli
 ```shell
 loopctl replay --id 1 --destination web.default:9090
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
 
 You should be able to hit the break points from here and replay the requests as many times as you need. 
 

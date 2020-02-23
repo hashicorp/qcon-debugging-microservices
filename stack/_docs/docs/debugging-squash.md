@@ -6,22 +6,18 @@ sidebar_label: Debugging with Squash
 
 # Debugging microservices in Kubernetes
 
-## NOTE:
+In the previous tutorials, we leveraged the service mesh from a developers' perspective to build resilience and observability into our service calls. This helps us both mitigate issues on the network between services as well as surface the appropriate signals to identify where and when there are issues. Ultimately, the service mesh can help save us from a cascading failure by improving resilience, but we need to couple this with debugging and fixing the issues altogether. 
 
-We do not mention in this that when you build you need to leave debug symbols in for the debugger to attach.
+In this part of the tutorial, we'll explore some mesh-complementary tools to debug a remote running microservice within your IDE and identify problems. We'll also explore how to do this in a more "production" like environment where you may not (most likely!) be able to connect up directly to the service running in production. We'll use a tool called `loop` that will allow us to record and reply requests from an environment. Let's get started.
+
+### Note: building your code
+
+When you build your code, you need to leave debug symbols in for the debugger to attach.
 Our code actually does this with the following command.
 
 ```
 	CGO_ENABLED=0 GOOS=linux go build -gcflags "-N -l" -o ./bin/service ./main.go ./tracing.go ./handler.go
 ```
-We should mention that in the text
-
-## END NOTE:
-
-
-In the previous tutorials, we leveraged the service mesh from a developers' perspective to build resilience and observability into our service calls. This helps us both mitigate issues on the network between services as well as surface the appropriate signals to identify where and when there are issues. Ultimately, the service mesh can help save us from a cascading failure by improving resilience, but we need to couple this with debugging and fixing the issues altogether. 
-
-In this part of the tutorial, we'll explore some mesh-complementary tools to debug a remote running microservice within your IDE and identify problems. We'll also explore how to do this in a more "production" like environment where you may not (most likely!) be able to connect up directly to the service running in production. We'll use a tool called `loop` that will allow us to record and reply requests from an environment. Let's get started.
 
 ## Debugging your services with Squash debugger
 
@@ -73,8 +69,12 @@ plankt48h2   0/1     ContainerCreating   0          2m33s
 If it takes too long for the image to download and connect up with your IDE, delete the pod and try again:
 
 ```shell
-kubectl delete po -n squash-debugger --all
+squashctl utils delete-planks
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
 
 If all goes well, you should be taken to the debug perspective:
 
@@ -99,8 +99,12 @@ From here, you're in the VSCode debugger -- there's nothing special about squash
 Once you're debugging session is done, whether you used the CLI or the IDE tools to bootstrap your debugger, it's always a good idea to clean up and lingering debugging sessions by deleting the `plank` pods in the `squash-debugger` namespace:
 
 ```shell
-kubectl delete po -n squash-debugger --all
+squashctl utils delete-planks
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
 
 ## Debugging our sleepy client
 

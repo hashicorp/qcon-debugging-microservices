@@ -86,13 +86,23 @@ consul-consul-server-0                                            1/1     Runnin
 consul-consul-fqn7l                                               1/1     Running   0          45m
 ```
 
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
+
 ### Display Consul members `consul members`
+
 ```shell
 consul members
 Node                    Address         Status  Type    Build  Protocol  DC   Segment
 consul-consul-server-0  10.42.0.9:8301  alive   server  1.6.1  2         dc1  <all>
 k3d-shipyard-server     10.42.0.6:8301  alive   client  1.6.1  2         dc1  <default>
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
+
 
 When you now view the web service in your browser at [http://localhost:9090/ui](http://localhost:9090/ui), you will see the UI for `Fake Service`. Fake Service simulates complex service topologies. In this example, you have two tier system, `Web` calls an upstream service `API`. All of this traffic is flowing over the service mesh.
 
