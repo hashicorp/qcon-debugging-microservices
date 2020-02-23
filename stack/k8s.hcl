@@ -13,7 +13,7 @@ k8s_config "app" {
   depends_on = ["helm.consul"]
   cluster = "k8s_cluster.k3s"
 
-  paths = ["./files/kube_config/app"]
+  paths = ["./files/kube_config/app", "./files/kube_config/gloo-loop"]
   
   wait_until_ready = true
 }

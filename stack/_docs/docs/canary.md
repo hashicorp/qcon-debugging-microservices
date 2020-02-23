@@ -1,6 +1,6 @@
 ---
 id: canary
-title: Debugging Microservices
+title: Canary Releases
 sidebar_label: Canary Deployments
 ---
 

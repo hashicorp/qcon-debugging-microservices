@@ -1,7 +1,7 @@
 ---
-id: debugging
+id: debugging-squash
 title: Debugging Microservices
-sidebar_label: Debugging
+sidebar_label: Debugging with Squash
 ---
 
 # Debugging microservices in Kubernetes

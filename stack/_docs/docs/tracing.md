@@ -1,7 +1,7 @@
 ---
-id: index
-title: Debugging Microservices
-sidebar_label: Tracing
+id: tracing
+title: Distributed Tracing
+sidebar_label: Distributed Tracing
 ---
 
 # Tracing
