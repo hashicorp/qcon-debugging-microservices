@@ -36,4 +36,9 @@ container "vscode" {
     key = "KUBECONFIG"
     value = "/root/.shipyard/config/k3s/kubeconfig-docker.yaml"
   }
+  
+  env {
+    key = "CONSUL_HTTP_ADDR"
+    value = "http://consul-http.ingress.shipyard:8500"
+  }
 }

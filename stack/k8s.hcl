@@ -18,11 +18,21 @@ k8s_config "app" {
   wait_until_ready = true
 }
 
-k8s_config "gloo" {
+k8s_config "gloo_crds" {
   cluster = "k8s_cluster.k3s"
 
   paths = [
     "./files/kube_config/gloo-loop/00-crds.yaml",
+  ]
+  
+  wait_until_ready = true
+}
+
+k8s_config "gloo" {
+  depends_on = ["k8s_config.gloo_crds"]
+  cluster = "k8s_cluster.k3s"
+
+  paths = [
     "./files/kube_config/gloo-loop/10-gloo.yaml",
     "./files/kube_config/gloo-loop/20-gloo-crs.yaml",
   ]
