@@ -88,14 +88,6 @@ Fake Service is not that fake though, it also emits metrics and tracing data whi
 We use an edge gateway/ingress called [Gloo which is an open-source API Gateway](https://docs.solo.io/gloo/latest/) built on [Envoy Proxy](https://docs.solo.io/gloo/latest/) to handle routing into the cluster. Gloo also enables some other features like debugging which we'll dive into later in the tutorial. To get started with Gloo, let's install the proxy and its control plane into the `gloo-system` namespace.
 
 
-### Installing Gloo API Gateway
-
-```shell
-$  kubectl apply -f gloo-loop/gloo.yaml
-```
-
-We should see various CRDs, services and deployments installed into the cluster. Once finished, we should be able to get the kubernetes pods from the `gloo-system` namespace to verify all of the components have come up. The important components are the `gateway-proxy-v2` and `gloo` components.
-
 ### Getting the Gloo Pods
 
 ```shell
@@ -188,19 +180,7 @@ $  curl -v $(glooctl proxy url)
 }
 ```
 
-To call the `web` service from your local machine, you'll need to use `yard` to expose the port like we did in the previous steps:
-
-### Exposing the API Gateway to your machine locally
-
-```shell
-yard expose --service-name svc/gateway-proxy-v2 --namespace gloo-system  --port 9090:80
-```
-
-Now you should be able to call the `web` service directly through the API Gateway from your local machine. Point your browser to [http://localhost:9090/ui/](http://localhost:9090/ui/) and verify:
-
-![](images/getting_started/web.png)
-
 
 ## Summary
 
-In this section you have learned how to set up a simple application in a development environment. In the next section we will start to investigate the capabilities of the Service Mesh and what they means for us developers.
+In this section you have learned how to set up a simple application in a development environment. In the next section we will start to investigate how Envoy and Service Mesh technology can be used to troubleshoot and debug cloud-native applications.

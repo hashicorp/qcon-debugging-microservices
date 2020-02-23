@@ -30,8 +30,6 @@ metadata:
 type: Opaque
 data:
   license-key: ""
----
-
 
 ---
 # Source: gloo-ee/charts/gloo/templates/2-gloo-usage-configmap.yaml
@@ -45,9 +43,6 @@ metadata:
     app: gloo
     gloo: gloo-usage
 data:
-
----
-# Source: gloo-ee/charts/gloo/templates/9-gateway-proxy-configmap.yaml
 
 ---
 # config_map
@@ -267,189 +262,8 @@ metadata:
 
 
 ---
-# Source: gloo-ee/charts/gloo/templates/100-gloo-crds.yaml
-
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: settings.gloo.solo.io
-  annotations:
-    "helm.sh/hook": crd-install
-  labels:
-    gloo: settings
-spec:
-  group: gloo.solo.io
-  names:
-    kind: Settings
-    listKind: SettingsList
-    plural: settings
-    shortNames:
-      - st
-  scope: Namespaced
-  version: v1
-  versions:
-    - name: v1
-      served: true
-      storage: true
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: gateways.gateway.solo.io.v2
-  annotations:
-    "helm.sh/hook": crd-install
-spec:
-  group: gateway.solo.io.v2
-  names:
-    kind: Gateway
-    listKind: GatewayList
-    plural: gateways
-    shortNames:
-      - gw
-    singular: gateway
-  scope: Namespaced
-  version: v2
-  versions:
-    - name: v2
-      storage: true
-      served: true
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: virtualservices.gateway.solo.io
-  annotations:
-    "helm.sh/hook": crd-install
-spec:
-  group: gateway.solo.io
-  names:
-    kind: VirtualService
-    listKind: VirtualServiceList
-    plural: virtualservices
-    shortNames:
-      - vs
-    singular: virtualservice
-  scope: Namespaced
-  version: v1
-  versions:
-  - name: v1
-    served: true
-    storage: true
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: routetables.gateway.solo.io
-  annotations:
-    "helm.sh/hook": crd-install
-spec:
-  group: gateway.solo.io
-  names:
-    kind: RouteTable
-    listKind: RouteTableList
-    plural: routetables
-    shortNames:
-      - rt
-    singular: routetable
-  scope: Namespaced
-  version: v1
-  versions:
-  - name: v1
-    served: true
-    storage: true
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: proxies.gloo.solo.io
-  annotations:
-    "helm.sh/hook": crd-install
-spec:
-  group: gloo.solo.io
-  names:
-    kind: Proxy
-    listKind: ProxyList
-    plural: proxies
-    shortNames:
-      - px
-    singular: proxy
-  scope: Namespaced
-  version: v1
-  versions:
-  - name: v1
-    served: true
-    storage: true
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: upstreams.gloo.solo.io
-  annotations:
-    "helm.sh/hook": crd-install
-spec:
-  group: gloo.solo.io
-  names:
-    kind: Upstream
-    listKind: UpstreamList
-    plural: upstreams
-    shortNames:
-      - us
-    singular: upstream
-  scope: Namespaced
-  version: v1
-  versions:
-  - name: v1
-    served: true
-    storage: true
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: upstreamgroups.gloo.solo.io
-  annotations:
-    "helm.sh/hook": crd-install
-spec:
-  group: gloo.solo.io
-  names:
-    kind: UpstreamGroup
-    listKind: UpstreamGroupList
-    plural: upstreamgroups
-    shortNames:
-      - ug
-    singular: upstreamgroup
-  scope: Namespaced
-  version: v1
-  versions:
-  - name: v1
-    served: true
-    storage: true
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: authconfigs.enterprise.gloo.solo.io
-  annotations:
-    "helm.sh/hook": crd-install
-spec:
-  group: enterprise.gloo.solo.io
-  names:
-    kind: AuthConfig
-    listKind: AuthConfigList
-    plural: authconfigs
-    shortNames:
-    - ac
-    singular: authconfig
-  scope: Namespaced
-  version: v1
-  versions:
-  - name: v1
-    served: true
-    storage: true
----
----
 # Source: gloo-ee/charts/gloo/templates/20-namespace-clusterrole-gateway.yaml
 
----
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -625,8 +439,6 @@ rules:
     verbs: ["create", "update", "delete"] # .Values.apiServer.enterprise # .Values.apiServer.enable
 
 
-
----
 # Source: gloo-ee/charts/gloo/templates/23-namespace-clusterrolebinding-gateway.yaml
 
 ---
@@ -865,7 +677,6 @@ spec:
   selector:
     gloo: gateway
 
----
 # Source: gloo-ee/charts/gloo/templates/8-gateway-proxy-service.yaml
 
 ---
@@ -1141,7 +952,6 @@ spec:
 ---
 # Source: gloo-ee/charts/gloo/templates/7-gateway-proxy-deployment.yaml
 # if envoySidecar
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -1461,9 +1271,6 @@ spec:
 ---
 # Source: gloo-ee/charts/gloo/templates/8-default-gateways.yaml
 
-
-
----
 apiVersion: gateway.solo.io.v2/v2
 kind: Gateway
 metadata:
@@ -1542,166 +1349,6 @@ spec:
         ratelimit_server_ref:
           name: rate-limit
           namespace: gloo-system
-
----
-# Source: gloo-ee/charts/gloo/templates/0-namespace.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/10-ingress-deployment.yaml
-
-
----
-# Source: gloo-ee/charts/gloo/templates/11-ingress-proxy-deployment.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/12-ingress-proxy-configmap.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/13-ingress-proxy-service.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/14-clusteringress-proxy-deployment.yaml
-
-
----
-# Source: gloo-ee/charts/gloo/templates/15-clusteringress-proxy-configmap.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/16-clusteringress-proxy-service.yaml
-
-
----
-# Source: gloo-ee/charts/gloo/templates/18-settings.yaml
-
-
----
-# Source: gloo-ee/charts/gloo/templates/21-namespace-clusterrole-ingress.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/22-namespace-clusterrole-knative.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/24-namespace-clusterrolebinding-ingress.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/25-namespace-clusterrolebinding-knative.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/26-knative-external-proxy-deployment.yaml
-
-
----
-# Source: gloo-ee/charts/gloo/templates/27-knative-external-proxy-configmap.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/28-knative-external-proxy-service.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/29-knative-internal-proxy-deployment.yaml
-
-
----
-# Source: gloo-ee/charts/gloo/templates/30-knative-internal-proxy-configmap.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/31-knative-internal-proxy-service.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/6-access-logger-deployment.yaml
-
----
-# Source: gloo-ee/charts/gloo/templates/6-access-logger-service.yaml
-
-
----
-# Source: gloo-ee/charts/gloo/templates/6.5-gateway-conversion-job.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/alertmanager-configmap.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/alertmanager-deployment.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/alertmanager-ingress.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/alertmanager-networkpolicy.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/alertmanager-pvc.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/alertmanager-service-headless.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/alertmanager-service.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/alertmanager-serviceaccount.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/alertmanager-statefulset.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/kube-state-metrics-networkpolicy.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/node-exporter-daemonset.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/node-exporter-podsecuritypolicy.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/node-exporter-role.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/node-exporter-rolebinding.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/node-exporter-service.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/node-exporter-serviceaccount.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/pushgateway-deployment.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/pushgateway-ingress.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/pushgateway-service.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/pushgateway-serviceaccount.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/server-ingress.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/server-networkpolicy.yaml
-
-
----
-# Source: gloo-ee/charts/prometheus/templates/server-service-headless.yaml
-
----
-# Source: gloo-ee/charts/prometheus/templates/server-statefulset.yaml
-
-
----
-# Source: gloo-ee/templates/23-extauth-upstream.yaml
 
 ---
 apiVersion: gloo.solo.io/v1
