@@ -1,6 +1,6 @@
 ---
 id: index
-title: Welcome to Debugging Microservices Workshop
+title: Debugging Microservices Workshop
 sidebar_label: Welcome
 ---
 
@@ -32,31 +32,31 @@ This will bring up the environment locally. The Consul, Gateway, and Jaeger tabs
 
 There are a handful of tabs that are available that expose the various components of the workshop. 
 
-### Service (Web) UI
+### Service (Web) Tab
 
 This tab allows you to directly call the Web service  that  has been deployed. Web ends  up calling other services, and you can see the chain in the UI. 
 
 ![](images/getting_started/web.png)
 
-### Vscode UI
+### VScode Tab
 
 This tab gives you a fully operational coding  environment and terminal. See the following section for more information.
 
 ![](images/getting_started/vscode.png)
 
-### Consul UI
+### Consul Tab
 
 Consul UI is available which gives you a UI into Consul Service Mesh.
 
 ![](images/getting_started/consul_ui.png)
 
-### Jeager UI
+### Jeager Tab
 
 We use Jaeger for distributed tracing in this lab.
 
 ![](images/getting_started/jaeger.png)
 
-### Docs
+### Docs Tab
 
 You would see these docs in the Docs tab.
 
@@ -104,13 +104,11 @@ k3d-shipyard-server     10.42.0.6:8301  alive   client  1.6.1  2         dc1  <d
 </p>
 
 
-When you now view the web service in your browser at [http://localhost:9090/ui](http://localhost:9090/ui), you will see the UI for `Fake Service`. Fake Service simulates complex service topologies. In this example, you have two tier system, `Web` calls an upstream service `API`. All of this traffic is flowing over the service mesh.
+When you now view the web service tab in your browser, you will see the UI for `Fake Service`. Fake Service simulates complex service topologies. In this example, you have two tier system, `Web` calls an upstream service `API`. All of this traffic is flowing over the service mesh.
 
 ![](images/getting_started/web.png)
 
-Fake Service is not that fake though, it also emits metrics and tracing data which is capture by `Jaeger`. We will learn more about how tracing works inside your application and in the service mesh in the next section. For now you can look at the dashboard by pointing your browser at [http://localhost:16686/search](http://localhost:16686/search)
-
-
+Fake Service is not that fake though, it also emits metrics and tracing data which is capture by `Jaeger`. We will learn more about how tracing works inside your application and in the service mesh in the next section. For now you can look at the Jaeger Tab to see tracing spans.
 
 
 

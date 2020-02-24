@@ -17,7 +17,7 @@ In this section, we're going to use a tool called Gloo Loop to be able to identi
 To get started using loop, let's install the loop server:
 
 ```shell
-kubectl apply -f gloo-loop/loop.yaml
+kubectl apply -f exercises/debugging-loop/loop.yaml
 ```
 
 <p>
@@ -90,7 +90,7 @@ This `TapConfig` resource says to capture any requests who's status starts with 
 Let's apply this configuration to loop:
 
 ```shell
-kubectl apply -f gloo-loop/tap.yaml
+kubectl apply -f exercises/debugging-loop/tap.yaml
 ```
 
 <p>
@@ -101,21 +101,7 @@ Now we should have our Loop system configured for capture. Next we need to send 
 
 ### Capturing requests
 
-To exercise this behavior, make sure one of the failing services from the previous section is enabled. When we introduced `payments` service (as a `green` deployment in a `blue-green` scenario), we saw that requests would timeout and an `HTTP 500` status was returned. Let's exercise this request, but the important part is to call this through the API Gateway which has Loop enabled. To do this, we need to expose the API Gateway like we did in the getting-started section:
-
-Also make sure the route was created to the `web` service. If it's not, here's a quick convenience command to do so:
-
-```shell
-$  glooctl add route --path-prefix / --dest-name default-web-9090
-
-+-----------------+--------------+---------+------+----------+-----------------+--------------------------------+
-| VIRTUAL SERVICE | DISPLAY NAME | DOMAINS | SSL  |  STATUS  | LISTENERPLUGINS |             ROUTES             |
-+-----------------+--------------+---------+------+----------+-----------------+--------------------------------+
-| default         | default      | *       | none | Accepted |                 | / ->                           |
-|                 |              |         |      |          |                 | gloo-system.default-web-9090   |
-|                 |              |         |      |          |                 | (upstream)                     |
-+-----------------+--------------+---------+------+----------+-----------------+--------------------------------+
-```
+To exercise this behavior, make sure one of the failing services from the previous section is enabled. When we introduced `payments` service (as a `green` deployment in a `blue-green` scenario), we saw that requests would timeout and an `HTTP 500` status was returned. Let's exercise this request, but the important part is to call this through the API Gateway which has Loop enabled. To do this, we need to expose the API Gateway like we did in the API Gateway section:
 
 Now make a request:
 
@@ -131,7 +117,15 @@ When you hit a failed request (HTTP 500), the Loop system should had recorded th
 
 ```shell
 loopctl list
+```
 
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
+
+You should  see output similar to:
+
+```
 +----+------+------+--------+-------------+
 | ID | PATH | VERB | STATUS | DESTINATION |
 +----+------+------+--------+-------------+
@@ -139,9 +133,6 @@ loopctl list
 +----+------+------+--------+-------------+
 ```
 
-<p>
-  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
-</p>
 
 Yay! We've sorted through the requests and captured only the failing ones. Now let's see how we can replay this in a way that allows us to debug the system. 
 

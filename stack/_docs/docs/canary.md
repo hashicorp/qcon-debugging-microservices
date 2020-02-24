@@ -37,13 +37,13 @@ ok      example.com/broken/payment-service      0.013s
 Everything should be functioning as expected, you can now build the new version of the application as you did in the previous exercise. This time we are going to use the `v3.0.0` version.
 
 ```
-docker build -t nicholasjackson/broken-service:v3.0.0 .
+docker build -t nicholasjackson/broken-service:v6.0.0 .
 ```
 
 This image can then be pushed to your Kubernetes cluster.
 
 ```
-shipyard push nicholasjackson/broken-service:latest k8s_cluster.k3s
+shipyard push nicholasjackson/broken-service:v6.0.0 k8s_cluster.k3s
 ```
 
 <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" />
@@ -69,8 +69,8 @@ Examining this file further, you will see that we are using custom annotations `
 annotations:
   "consul.hashicorp.com/connect-inject": "true"
   "consul.hashicorp.com/connect-service-upstreams": "currency:9091"
-  "consul.hashicorp.com/service-meta-version": "3"
-  "consul.hashicorp.com/service-tags": "v3"
+  "consul.hashicorp.com/service-meta-version": "6"
+  "consul.hashicorp.com/service-tags": "v6"
 ```
 
 Before we deploy our service, we need to create the configuration for the Canary, otherwise; traffic would be round robin load balanced across all insances of the `payments` service which includes our new and untested code.
@@ -87,10 +87,10 @@ default_subset = "blue"
 
 subsets = {
   blue = {
-    filter = "Service.Meta.version == 2"
+    filter = "Service.Meta.version == 5"
   }
   green = {
-    filter = "Service.Meta.version == 3"
+    filter = "Service.Meta.version == 6"
   }
 }
 ```
@@ -98,14 +98,22 @@ subsets = {
 You can apply this file by using the command `consul config write`
 
 ```
-consul config write payments_resolver.hcl
+consul config write exercises/canary/payments_resolver.hcl
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root"/>
+</p>
 
 Now the resolver has been written it is safe to deploy our new version of the payments service, no traffic will be directed to this until we create our traffic splitting rules.
 
 ```
-kubectl apply -f 3_canary/payments_green.yml
+kubectl apply -f exercises/canary/payments_green.yml
 ```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root"/>
+</p>
 
 You can check that your service is only resolving to the v2 of the payments service by curling the `web` service.
 
@@ -170,8 +178,11 @@ splits = [
 Again let's apply this configuration using the Consul command line tool.
 
 ```
-consul config write 3_canary/payments_splitter.hcl
+consul config write exercises/canary/payments_splitter.hcl
 ```
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root"/>
+</p>
 
 You can now test your application, you might need to make a few requests to hit the green version of your service but over time this will average out as 50% of all requests.
 
