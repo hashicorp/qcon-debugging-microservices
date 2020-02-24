@@ -9,8 +9,8 @@ rm -rf /var/lib/apt/lists/*
 curl https://shipyard.run/install | bash 
 shipyard version
 
+# Run shipyard only to cache the latest version of the docker images on the box to speed up start times
 shipyard run --no-browser github.com/hashicorp/qcon-debugging-microservices//stack
-
-shipyard pause
+shipyard destroy
 
 df -h
