@@ -35,6 +35,12 @@ If you're running on your local machine, sometimes it takes a while to download 
 docker pull quay.io/solo-io/plank-dlv:0.5.18
 ```
 
+Now push the image to the internal Kubernetes repo:
+
+```shell
+shipyard push quay.io/solo-io/plank-dlv:0.5.18 k8s_cluster.k3s
+```
+
 ### Pick a pod to debug
 
 From within the VSCode web-based IDE, hit "CTRL+Shift+P" to bring up the plugin dialog and start typing "Squash". You should see the squash plugin pop up. Hit Enter on it:

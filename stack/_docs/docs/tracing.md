@@ -6,7 +6,7 @@ sidebar_label: Distributed Tracing
 
 # Tracing
 
-The application you deployed in the previous step has been configured to use the [Zipkin](https://zipkin.io/) tracing protocol. Let's curl the Web endpoint to generate some traces.
+The application we explored in the previous step has been configured to use the [Zipkin](https://zipkin.io/) tracing protocol. Let's curl the Web endpoint to generate some traces.
 
 ```shell
 curl web.ingress.shipyard:9090
@@ -16,7 +16,7 @@ curl web.ingress.shipyard:9090
   <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
 </p>
 
-Jaeger has been configured to collect and visualize the traces, all spans are sent are transmitted from the applications and Envoy proxies and are collected in Jaeger. If you look at the Jaeger UI, and view a trace from the `web` service you will see the individual spans which make up a trace.
+Jaeger has been configured to collect and visualize the traces. All spans are transmitted from the applications and Envoy proxies and are collected in Jaeger. If you look at the Jaeger tab, and view a trace from the `web` service, you will see the individual spans which make up a trace.
 
 ![](images/tracing/web_1.png)
 
@@ -24,11 +24,11 @@ Traces are broken up into individual spans which relate to an action or function
 
 ![](images/tracing/web_2.png)
 
-Spans are related by their ID, when a new span is created the ID of the parent is associated with it. The entire trace is not transmitted to the server in a single document, as a trace can contain spans for multiple different services. Instead each span is transmitted to the server individually, it is the relation between parent and child which allows Jaeger to be able to reconstruct the individual spans into a trace.
+Spans are related by their ID. When a new span is created, the ID of the parent is associated with it. The entire trace is not transmitted to the server in a single document, as a trace can contain spans for multiple different services. Instead each span is transmitted to the server individually, it is the relation between parent and child which allows Jaeger to be able to re-construct the individual spans into a trace.
 
 When you are creating spans in code, you can easily create child spans as the relation can be passed using the OpenTracing API. The problem is how do you pass the span id to an external service, like when you call an upstream API? An example of this problem can be seen with the `Payment` and `Currency` service in the example app.
 
-If you look at the trace, the last span in the chain is the `payments` span which has been created by the Envoy proxy in the service mesh. However; the full call chain should be Web -> API -> Payment -> Currency. The spans for `Payments` and `Currency` can be found in the Jaeger UI if you select them in the `Service` search box, but they are detached from the main trace.
+If you look at the trace, the last span in the chain is the `payments` span which has been created by the Envoy proxy in the service mesh. However; the full call chain should be Web -> API -> Payment -> Currency. The spans for `Payments` and `Currency` can be found in the Jaeger tab if you select them in the `Service` search box, but they are detached from the main trace.
 
 The reason behind this is that the Payment service is not aware of any parent span id from the API service.
 

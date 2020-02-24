@@ -17,7 +17,7 @@ In this section, we're going to use a tool called Gloo Loop to be able to identi
 To get started using loop, let's install the loop server:
 
 ```shell
-kubectl apply -f gloo-loop/loop.yaml
+kubectl apply -f exercises/debugging-loop/loop.yaml
 ```
 
 <p>
