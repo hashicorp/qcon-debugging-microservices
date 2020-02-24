@@ -31,6 +31,15 @@ Once you have everything up and running you can test the code before packaging i
 
 ```shell
 ➜ go test ./...
+```
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root"/>
+</p>
+
+
+You should see something like this:
+
+```shell
 ok      example.com/broken/payment-service      0.013s
 ```
 
@@ -40,15 +49,18 @@ Everything should be functioning as expected, you can now build the new version 
 docker build -t nicholasjackson/broken-service:v6.0.0 .
 ```
 
+
+<Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root" />
+
 This image can then be pushed to your Kubernetes cluster.
 
 ```
 shipyard push nicholasjackson/broken-service:v6.0.0 k8s_cluster.k3s
 ```
 
-<Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" />
+<Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root" />
 
-If you look at the folder `3_canary` you will find the service deployment for the new version `payments_green.yml`.
+If you look at the folder `exercises/canary` you will find the service deployment for the new version `payments_green.yml`.
 
 Unlike the previous deployment where we overwrote the version 1 with version 2, this time we have created a completely new deployment, so both versions will exist at the same time.
 
@@ -102,7 +114,7 @@ consul config write exercises/canary/payments_resolver.hcl
 ```
 
 <p>
-  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root"/>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root"/>
 </p>
 
 Now the resolver has been written it is safe to deploy our new version of the payments service, no traffic will be directed to this until we create our traffic splitting rules.
@@ -112,13 +124,22 @@ kubectl apply -f exercises/canary/payments_green.yml
 ```
 
 <p>
-  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root"/>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root"/>
 </p>
 
 You can check that your service is only resolving to the v2 of the payments service by curling the `web` service.
 
+```shell
+curl web.ingress.shipyard:9090
 ```
-curl localhost:9090
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
+
+You should see something like:
+
+```
 {
   "name": "web",
   "uri": "/",
@@ -181,13 +202,22 @@ Again let's apply this configuration using the Consul command line tool.
 consul config write exercises/canary/payments_splitter.hcl
 ```
 <p>
-  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root"/>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root"/>
 </p>
 
 You can now test your application, you might need to make a few requests to hit the green version of your service but over time this will average out as 50% of all requests.
 
+```shell
+curl web.ingress.shipyard:9090
 ```
-➜ curl localhost:9090
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
+
+You should see something like:
+
+```
 {
   "name": "web",
   "uri": "/",

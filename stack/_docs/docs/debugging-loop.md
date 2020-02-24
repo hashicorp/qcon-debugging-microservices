@@ -51,15 +51,20 @@ You can specify what messages or requests Loop should capture using a configurat
 ```shell
 loopctl list
 
-+----+------+------+--------+-------------+
-| ID | PATH | VERB | STATUS | DESTINATION |
-+----+------+------+--------+-------------+
-+----+------+------+--------+-------------+
 ```
 
 <p>
   <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
 </p>
+
+You should see an empty list:
+
+```
++----+------+------+--------+-------------+
+| ID | PATH | VERB | STATUS | DESTINATION |
++----+------+------+--------+-------------+
++----+------+------+--------+-------------+
+```
 
 We see that we don't have any requests captured. Let's explore how loop works and how we can configure it to capture failed requests so we can replay them and debug. 
 
@@ -143,6 +148,8 @@ Now that we've captured our failing requests, we can replay them. In this simpli
 ```shell
 loopctl replay --id 1 --destination web.default:9090
 ```
+
+NOTE: You may want to adjust the `id` param depending which request you want to send in. 
 
 <p>
   <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>

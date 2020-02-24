@@ -35,15 +35,29 @@ If you're running on your local machine, sometimes it takes a while to download 
 docker pull quay.io/solo-io/plank-dlv:0.5.18
 ```
 
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root"/>
+</p>
+
 Now push the image to the internal Kubernetes repo:
 
 ```shell
 shipyard push quay.io/solo-io/plank-dlv:0.5.18 k8s_cluster.k3s
 ```
 
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root"/>
+</p>
+
+
 ### Pick a pod to debug
 
-From within the VSCode web-based IDE, hit "CTRL+Shift+P" to bring up the plugin dialog and start typing "Squash". You should see the squash plugin pop up. Hit Enter on it:
+From within the VSCode web-based IDE, hit "CTRL+Shift+P" to bring up the plugin dialog and start typing "Squash". If the keyboard shortcut doesn't work you can navigate to the upper left corner "View" sub menu and get the Command Pallet menu:
+
+![](images/debugging/command-pallet.png)
+
+
+You should see the squash plugin pop up. Hit Enter on it:
 
 ![](images/debugging/vscode-plugin-search.png)
 
@@ -68,19 +82,19 @@ If this is your first time running Squash, give it a few moments to download the
 
 ```shell
 kubectl get po -n squash-debugger
-NAME         READY   STATUS              RESTARTS   AGE
-plankt48h2   0/1     ContainerCreating   0          2m33s
-```
 
-If it takes too long for the image to download and connect up with your IDE, delete the pod and try again:
-
-```shell
-squashctl utils delete-planks
 ```
 
 <p>
-  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root"/>
 </p>
+
+You should see something like this:
+
+```
+NAME         READY   STATUS              RESTARTS   AGE
+plankt48h2   0/1     ContainerCreating   0          2m33s
+```
 
 If all goes well, you should be taken to the debug perspective:
 
@@ -100,21 +114,42 @@ Now if you exercise your service, you should hit the break point:
 
 From here, you're in the VSCode debugger -- there's nothing special about squash here. You can step-by-step debug, step-over, or continue into the rest of the source code with full access to the call stack and context variables. You can use this approach to continue debugging for where things might be incorrect in your service. 
 
-### Cleaning up
-
-Once you're debugging session is done, whether you used the CLI or the IDE tools to bootstrap your debugger, it's always a good idea to clean up and lingering debugging sessions by deleting the `plank` pods in the `squash-debugger` namespace:
-
-```shell
-squashctl utils delete-planks
-```
-
-<p>
-  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
-</p>
 
 ## Finding issues
 
-In  the previous section we have introduced an issue with the `payment-green` service we deployed. If you don't have that service deployed yet, run the following:
+In  the Canary section we have introduced an issue with the `payment-green` service we deployed. If you don't have that service deployed yet let's build it and deploy it.
+
+Run the following commands to quickly get the broken green service up and running. From the `payment-service` folder, run:
+
+
+```shell
+cp ../exercises/canary/handler.go .
+```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root" expanded/>
+</p>
+
+
+This `payment-green` service introduces a bug. It uses a different HTTP client adorably named "sleep client". Specifically, we add this line:
+
+```go
+	c := &sleepy.HTTP{}
+	resp, err := c.Do(req)
+```
+
+Now let's build and push the new code:
+
+```shell
+docker build -t nicholasjackson/broken-service:v6.0.0 .
+shipyard push nicholasjackson/broken-service:v6.0.0 k8s_cluster.k3s
+```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work/payment-service" user="root" expanded/>
+</p>
+
+Lastly, deploy the new service
 
 ```shell
 kubectl apply -f exercises/canary/payments_green.yml
@@ -124,14 +159,19 @@ kubectl apply -f exercises/canary/payments_green.yml
   <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
 </p>
 
-This `payment-green` service introduces a bug. It uses a different HTTP client adorably named "sleep client". Specifically, we add this line:
 
-```go
-	c := &sleepy.HTTP{}
-	resp, err := c.Do(req)
-```
 
 When we deploy this problematic service, we see 50% of the time we hit timeouts.  Let's debug that.
+
+Now try calling our service:
+
+```shell
+curl web.ingress.shipyard:9090
+```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
 
 ### Debugging our sleepy client
 
@@ -140,3 +180,15 @@ In the previous section, we introduced a new HTTP client that seems to be causin
 ![](images/debugging/sleepy-breakpoint.png)
 
 Once you've debugged into the code, you should be able to tell that the sleepy client implementation seems to be inefficient and slow. 
+
+### Cleaning up
+
+Once you're debugging session is done, whether you used the CLI or the IDE tools to bootstrap your debugger, it's always a good idea to clean up and lingering debugging sessions by deleting the `plank` pods in the `squash-debugger` namespace:
+
+```shell
+squashctl utils delete-planks
+```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" />
+</p>

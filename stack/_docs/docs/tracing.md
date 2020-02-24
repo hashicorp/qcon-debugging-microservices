@@ -6,7 +6,37 @@ sidebar_label: Distributed Tracing
 
 # Tracing
 
-The application we explored in the previous step has been configured to use the [Zipkin](https://zipkin.io/) tracing protocol. Let's curl the Web endpoint to generate some traces.
+The application we explored in the previous step has been configured to use the [Zipkin](https://zipkin.io/) tracing protocol. Additionally, we're leveraging the service mesh to create spans (where they don't exist) and send them to a distributed-tracing engine. In our example, we're using Jaeger as the backend distributed-tracing engine and Zipkin as the OpenTracing implementation. 
+
+## Service mesh for tracing
+In the service mesh, we can see the Envoy sidecar has a configuration that specifies Jaeger as the collection target for traces:
+
+```shell
+PAYMENT_POD=$(kubectl get pod | grep payment-deployment-blue | awk '{ print $1 }')
+kubectl exec -it $PAYMENT_POD -c consul-connect-envoy-sidecar -- cat /consul/connect-inject/envoy-bootstrap.yaml 
+
+```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
+
+You should see a section of the Bootstrap Envoy config file that looks like this:
+
+```json
+  "tracing": {
+    "http": {
+      "config": {
+        "collector_cluster": "jaeger_9411",
+        "collector_endpoint": "/api/v1/spans"
+      },
+      "name": "envoy.zipkin"
+    }
+  },
+```
+
+## Viewing traces
+Let's curl the Web endpoint to generate some traces.
 
 ```shell
 curl web.ingress.shipyard:9090
