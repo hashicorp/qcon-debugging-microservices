@@ -1,5 +1,5 @@
 module.exports = {
     docs: {
-      "Debugging Microservices": ['index','tracing', 'debugging-squash', 'apigateway', 'debugging-loop'],
+      "Debugging Microservices": ['index','tracing','canary', 'debugging-squash', 'apigateway', 'debugging-loop'],
     },
   };

@@ -112,7 +112,28 @@ squashctl utils delete-planks
   <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
 </p>
 
-## Debugging our sleepy client
+## Finding issues
+
+In  the previous section we have introduced an issue with the `payment-green` service we deployed. If you don't have that service deployed yet, run the following:
+
+```shell
+kubectl apply -f exercises/canary/payments_green.yml
+```
+
+<p>
+  <Terminal target="vscode.container.shipyard" shell="/bin/bash" workdir="/work" user="root" expanded/>
+</p>
+
+This `payment-green` service introduces a bug. It uses a different HTTP client adorably named "sleep client". Specifically, we add this line:
+
+```go
+	c := &sleepy.HTTP{}
+	resp, err := c.Do(req)
+```
+
+When we deploy this problematic service, we see 50% of the time we hit timeouts.  Let's debug that.
+
+### Debugging our sleepy client
 
 In the previous section, we introduced a new HTTP client that seems to be causing some issues. Following the debugging steps from above, set some break points and step through to find out exactly where the code is slowing down. 
 
