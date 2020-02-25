@@ -79,16 +79,15 @@ Thankfully the OpenTracing SDK makes this process nice and simple.
 In the VS Code tab, open the `handler.go` file in the `payments-service` folder and add the following code to `line 14`. This code automatically extracts the headers from the request and creates a `SpanContext`. You can then use this when creating the span.
 
 ```go
-// attempt to create a span using a parent span defined in http headers
-	wireContext, err := opentracing.GlobalTracer().Extract(
+  // attempt to create a span using a parent span defined in http headers
+  wireContext, err := opentracing.GlobalTracer().Extract(
 		opentracing.HTTPHeaders,
 		opentracing.HTTPHeadersCarrier(r.Header),
 	)
-
 	if err != nil {
 		// if there is no span in the headers an error will be raised, log
-		// this error
-		logger.Debug("Error obtaining context, creating new span", "error", err)
+		// this error    
+		logger.Debug("Unable to create context", "error", err)
 	}
 ```
 
@@ -99,7 +98,8 @@ Modify the `StartSpan` block to add the additional option `ext.RPCServerOption`,
 	// If wireContext == nil, a root span will be created.
 	serverSpan := opentracing.StartSpan(
 		"handle_request",
-		ext.RPCServerOption(wireContext))
+		ext.RPCServerOption(wireContext),
+	)
 ```
 
 You will also need to import the `ext` package, add the following to your handler.go import statements.
@@ -116,23 +116,22 @@ Add the following code to `line 29` in `handler.go`:
 
 ```go
 
-clientSpan := opentracing.StartSpan(
-	"call_upstream",
-	opentracing.ChildOf(serverSpan.Context()),
-)
+	childSpan := opentracing.StartSpan(
+		"call_currency",
+		opentracing.ChildOf(serverSpan.Context()),
+	)
 
-clientSpan.LogFields(log.String("upstream.type", "http"))
+	ext.SpanKindRPCClient.Set(childSpan)
+	ext.HTTPUrl.Set(childSpan, req.URL.String())
+	ext.HTTPMethod.Set(childSpan, req.Method)
 
-ext.SpanKindRPCClient.Set(clientSpan)
-ext.HTTPUrl.Set(clientSpan, req.URL.String())
-ext.HTTPMethod.Set(clientSpan, req.Method)
-
-// Transmit the span's TraceContext as HTTP headers on our
-// outbound request.
-opentracing.GlobalTracer().Inject(
-	clientSpan.Context(),
-	opentracing.HTTPHeaders,
-	opentracing.HTTPHeadersCarrier(req.Header))
+  // Transmit the span's TraceContext as HTTP headers on our
+  // outbound request.
+	opentracing.GlobalTracer().Inject(
+		childSpan.Context(),
+		opentracing.HTTPHeaders,
+		opentracing.HTTPHeadersCarrier(req.Header),
+	)
 ```
 
 You will also need to add the following import to the imports declaration at the top of `handler.go`:
