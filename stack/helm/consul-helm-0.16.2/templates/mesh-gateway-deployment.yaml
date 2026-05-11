@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2020, 2026
+
 {{- if .Values.meshGateway.enabled }}
 {{- if not .Values.connectInject.enabled }}{{ fail "connectInject.enabled must be true" }}{{ end -}}
 {{- if not .Values.client.grpc }}{{ fail "client.grpc must be true" }}{{ end -}}

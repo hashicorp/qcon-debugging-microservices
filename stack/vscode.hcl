@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2020, 2026
+
 container "vscode" {
   image   {
     name = "shipyardrun/code:solo"

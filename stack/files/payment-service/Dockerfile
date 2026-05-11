@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2020, 2026
+
 FROM golang:alpine
 
 COPY . /go/src/github.com/hashicorp/debugging-microservices/payment-service

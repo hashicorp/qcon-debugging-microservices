@@ -1,4 +1,6 @@
 #! /bin/bash
+# Copyright IBM Corp. 2020, 2026
+
 VERSION=v4.0.0
 
 case "$1" in
