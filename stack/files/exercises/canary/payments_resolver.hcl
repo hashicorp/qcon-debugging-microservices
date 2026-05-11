@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2020, 2026
+
 kind = "service-resolver"
 name = "payment"
 

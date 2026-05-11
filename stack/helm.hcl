@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2020, 2026
+
 helm "consul" {
   cluster = "k8s_cluster.k3s"
   chart = "./helm/consul-helm-0.16.2"

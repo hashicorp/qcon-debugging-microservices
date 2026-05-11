@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2020, 2026
+
 k8s_cluster "k3s" {
   driver  = "k3s" // default
   version = "v1.0.0"

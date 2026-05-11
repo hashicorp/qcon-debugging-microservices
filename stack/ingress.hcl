@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2020, 2026
+
 ingress "consul-http" {
   network {
     name = "network.cloud"

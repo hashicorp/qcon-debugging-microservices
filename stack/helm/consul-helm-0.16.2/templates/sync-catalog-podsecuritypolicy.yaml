@@ -1,3 +1,5 @@
+# Copyright IBM Corp. 2020, 2026
+
 {{- if (and .Values.global.enablePodSecurityPolicies (or (and (ne (.Values.syncCatalog.enabled | toString) "-") .Values.syncCatalog.enabled) (and (eq (.Values.syncCatalog.enabled | toString) "-") .Values.global.enabled))) }}
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
